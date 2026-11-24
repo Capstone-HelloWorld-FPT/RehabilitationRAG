@@ -1,0 +1,145 @@
+[project]
+name = "rehabgraph"
+version = "0.1.0"
+description = "RehabGraph-RAG backend: FastAPI + Hexagonal (Ports & Adapters)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi[standard]",
+    "pydantic>=2",
+    "pydantic-settings",
+    "sqlalchemy[asyncio]>=2",
+    "asyncpg",
+    "alembic",
+    "pgvector",
+    "neo4j>=5",
+    "arq",
+    "redis",
+    "httpx",
+    "argon2-cffi",
+    "pyjwt",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "testcontainers[postgres,neo4j,redis]",
+    "ruff",
+    "mypy",
+    "import-linter",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rehabgraph"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "RUF", "ASYNC", "S"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # allow Vietnamese text and symbols like "→" in strings / comments
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["rehabgraph"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["arq.*", "pgvector.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+# ---------------------------------------------------------------- import-linter
+# Checks the hexagonal rules (BACKEND-ARCHITECTURE section 2, AGENTS.md section 4.3).
+[tool.importlinter]
+root_packages = ["rehabgraph"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Each module: adapters > application > ports > domain"
+type = "layers"
+containers = [
+    "rehabgraph.modules.identity",
+    "rehabgraph.modules.patients",
+    "rehabgraph.modules.care",
+    "rehabgraph.modules.pathways",
+    "rehabgraph.modules.discharge",
+    "rehabgraph.modules.knowledge",
+    "rehabgraph.modules.qa",
+    "rehabgraph.modules.notifications",
+    "rehabgraph.modules.audit",
+]
+layers = ["adapters", "application", "ports", "domain"]
+
+[[tool.importlinter.contracts]]
+name = "domain, application, ports, shared kernel use only the standard library"
+type = "forbidden"
+source_modules = [
+    "rehabgraph.modules.*.domain",
+    "rehabgraph.modules.*.application",
+    "rehabgraph.modules.*.ports",
+    "rehabgraph.shared.domain",
+    "rehabgraph.shared.auth",
+    "rehabgraph.shared.ports",
+]
+forbidden_modules = [
+    "fastapi",
+    "starlette",
+    "pydantic",
+    "pydantic_settings",
+    "sqlalchemy",
+    "asyncpg",
+    "alembic",
+    "pgvector",
+    "neo4j",
+    "arq",
+    "redis",
+    "httpx",
+    "jwt",
+    "argon2",
+    "rehabgraph.shared.adapters",
+    "rehabgraph.config",
+    "rehabgraph.container",
+    "rehabgraph.main",
+]
+
+[[tool.importlinter.contracts]]
+name = "Modules do not import each other"
+type = "independence"
+modules = [
+    "rehabgraph.modules.identity",
+    "rehabgraph.modules.patients",
+    "rehabgraph.modules.care",
+    "rehabgraph.modules.pathways",
+    "rehabgraph.modules.discharge",
+    "rehabgraph.modules.knowledge",
+    "rehabgraph.modules.qa",
+    "rehabgraph.modules.notifications",
+    "rehabgraph.modules.audit",
+]
+ignore_imports = [
+    # Allowed exceptions: an adapter calling another module through its ports/inbound.py,
+    # or a listener importing an event class from another module's domain/events.py.
+    # Add each one explicitly when needed, for example:
+    # "rehabgraph.modules.pathways.adapters.** -> rehabgraph.modules.care.ports.inbound",
+]
