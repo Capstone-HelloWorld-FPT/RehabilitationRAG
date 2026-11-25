@@ -1,0 +1,136 @@
+/* Design tokens: the only place colors, fonts and radius are declared (DESIGN.md §1, §13). */
+@import "tailwindcss";
+@import "@fontsource/be-vietnam-pro/400.css";
+@import "@fontsource/be-vietnam-pro/500.css";
+@import "@fontsource/be-vietnam-pro/700.css";
+
+:root {
+  /* Base palette (Figma) */
+  --teal-900: #0f3b38;
+  --teal-800: #174844;
+  --teal-700: #2a5a56;
+  --teal-500: #4d7a76;
+  --teal-100: #cfe3df;
+  --peach-400: #f4a98c;
+  --cream-50: #fdf1ec;
+  --border-warm: #f1ddd4;
+  --border-warm-2: #eadfd9;
+  --text-muted: #5d7472;
+  --text-on-dark-muted: #a9c3bf;
+
+  /* shadcn tokens (DESIGN.md §2.3) */
+  --background: #ffffff;
+  --foreground: var(--teal-900);
+  --card: #ffffff;
+  --card-foreground: var(--teal-900);
+  --popover: #ffffff;
+  --popover-foreground: var(--teal-900);
+  --primary: var(--teal-900);
+  --primary-foreground: #ffffff;
+  --secondary: var(--cream-50);
+  --secondary-foreground: var(--teal-900);
+  --muted: var(--cream-50);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--peach-400);
+  --accent-foreground: var(--teal-900);
+  --destructive: #dc2626; /* TODO: waiting for Figma. Temporary default red. */
+  --border: var(--border-warm);
+  --input: #dde5e3; /* Figma auth inputs (DESIGN.md §2.3) */
+  --ring: var(--teal-900);
+  --radius: 4px;
+
+  --sidebar: var(--teal-900);
+  --sidebar-foreground: var(--text-on-dark-muted);
+  --sidebar-primary: var(--peach-400);
+  --sidebar-primary-foreground: var(--teal-900);
+  --sidebar-border: rgb(255 255 255 / 0.1);
+}
+
+@theme inline {
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+
+  /* Base colors, use when needed (e.g. landing section backgrounds) */
+  --color-teal-900: var(--teal-900);
+  --color-teal-800: var(--teal-800);
+  --color-teal-700: var(--teal-700);
+  --color-teal-500: var(--teal-500);
+  --color-teal-100: var(--teal-100);
+  --color-peach-400: var(--peach-400);
+  --color-cream-50: var(--cream-50);
+  --color-border-warm-2: var(--border-warm-2);
+  --color-on-dark-muted: var(--text-on-dark-muted);
+
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+
+  /* Font scale (DESIGN.md §3.2) */
+  --text-display: 58px;
+  --text-display--line-height: 1.15;
+  --text-h2: 40px;
+  --text-h2--line-height: 1.2;
+  --text-h2-sm: 32px;
+  --text-h2-sm--line-height: 1.2;
+  --text-h3-lg: 24px;
+  --text-h3-lg--line-height: 1.3;
+  --text-logo: 22px;
+  --text-logo--line-height: 1.2;
+  --text-h3: 18px;
+  --text-h3--line-height: 1.3;
+  --text-body: 15px;
+  --text-body--line-height: 1.75;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.75;
+  --text-caption: 13px;
+  --text-caption--line-height: 1.4;
+  --text-eyebrow: 12px;
+  --text-eyebrow--letter-spacing: 0.03em;
+  --text-stat: 28px;
+  --text-stat--line-height: 1.2;
+
+  --container-content: 1200px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide Edge's built-in "show password" eye: the app draws its own toggle button. */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  @apply bg-background text-foreground font-sans antialiased;
+}

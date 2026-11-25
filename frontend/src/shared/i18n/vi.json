@@ -1,0 +1,187 @@
+{
+  "app": {
+    "nameLead": "Rehab",
+    "nameAccent": "Graph-RAG",
+    "name": "$t(app.nameLead)$t(app.nameAccent)",
+    "homeLink": "$t(app.name) - Trang chủ",
+    "aiDisclaimer": "AI chỉ hỗ trợ, không thay thế bác sĩ."
+  },
+  "nav": {
+    "skipToContent": "Bỏ qua, đến nội dung chính",
+    "mainMenu": "Menu chính",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "features": "Tính năng",
+    "howItWorks": "Cách hoạt động",
+    "faq": "Hỏi đáp",
+    "login": "Đăng nhập"
+  },
+  "landing": {
+    "pageTitle": "$t(app.name) - Trợ lý AI phục hồi chức năng",
+    "hero": {
+      "eyebrow": "Đồng hành cùng quá trình phục hồi",
+      "title": "Trợ lý AI <accent>Phục Hồi Chức Năng</accent> Đáng Tin Cậy.",
+      "description": "$t(app.name) trả lời câu hỏi về bài tập, lộ trình và chăm sóc phục hồi theo hướng dẫn của Bộ Y tế. Mỗi câu trả lời đều kèm nguồn trích dẫn.",
+      "learnMore": "Tìm hiểu thêm",
+      "seeHowItWorks": "Xem cách hoạt động"
+    },
+    "askStrip": {
+      "title": "Đừng ngần ngại đặt câu hỏi cho chúng tôi",
+      "cta": "Hỏi $t(app.name) ngay",
+      "cited": {
+        "title": "Trả lời có nguồn",
+        "description": "Mỗi câu trả lời dẫn về tài liệu gốc để bạn tự kiểm tra."
+      },
+      "doctorApproved": {
+        "title": "Bác sĩ luôn duyệt",
+        "description": "Lộ trình do AI gợi ý, bác sĩ là người quyết định."
+      }
+    },
+    "why": {
+      "eyebrow": "Vì sao chọn $t(app.name)",
+      "title": "Tri Thức Phục Hồi Chuẩn Xác & Dễ Hiểu Cho Mọi Người.",
+      "description": "Thay vì tìm kiếm rời rạc trên mạng, $t(app.name) truy xuất đúng đoạn tài liệu liên quan rồi tổng hợp thành câu trả lời rõ ràng.",
+      "points": {
+        "moh": "Theo hướng dẫn của Bộ Y tế",
+        "citations": "Trích dẫn nguồn rõ ràng cho từng ý",
+        "audience": "Hỗ trợ cả bệnh nhân và nhà trị liệu"
+      },
+      "cta": "Xem tính năng →"
+    },
+    "features": {
+      "eyebrow": "Tính năng",
+      "title": "Chúng Tôi Mang Đến Những Gì Tốt Nhất.",
+      "description": "Sáu công cụ cốt lõi giúp người bệnh hiểu đúng và nhà trị liệu tiết kiệm thời gian tra cứu.",
+      "cta": "Xem cách hoạt động",
+      "forLabel": "Dành cho: {{audience}}",
+      "items": {
+        "qa": {
+          "title": "Hỏi đáp AI",
+          "description": "Hỏi tự nhiên về đột quỵ, bài tập, chăm sóc.",
+          "audience": "Mọi người"
+        },
+        "citations": {
+          "title": "Trích dẫn nguồn",
+          "description": "Xem chính xác đoạn tài liệu làm cơ sở trả lời.",
+          "audience": "Mọi người"
+        },
+        "pathway": {
+          "title": "Lộ trình phục hồi",
+          "description": "Gợi ý bài tập theo từng giai đoạn phục hồi.",
+          "audience": "Bệnh nhân, bác sĩ"
+        },
+        "progress": {
+          "title": "Theo dõi tiến độ",
+          "description": "Ghi nhận buổi tập và mức độ đau theo thời gian.",
+          "audience": "Bệnh nhân, người nhà"
+        },
+        "therapist": {
+          "title": "Cho nhà trị liệu",
+          "description": "Tra cứu phác đồ, chia sẻ hướng dẫn cho bệnh nhân.",
+          "audience": "Kỹ thuật viên, bác sĩ"
+        },
+        "safety": {
+          "title": "Cảnh báo an toàn",
+          "description": "Nhắc dấu hiệu cần dừng tập và gặp bác sĩ.",
+          "audience": "Mọi người"
+        }
+      }
+    },
+    "askBanner": {
+      "title": "Có Thắc Mắc\nKhi Tập Tại Nhà?",
+      "description": "Đặt câu hỏi bất cứ khi nào bạn thắc mắc trong quá trình tập luyện tại nhà.",
+      "cta": "Đặt câu hỏi ngay"
+    },
+    "howItWorks": {
+      "eyebrow": "Cách hoạt động",
+      "title": "Phục Hồi Thông Minh Chỉ Với Bốn Bước.",
+      "description": "Từ câu hỏi của bạn đến câu trả lời có trích dẫn tài liệu Bộ Y tế.",
+      "steps": {
+        "ask": "Đặt câu hỏi",
+        "retrieve": "Truy xuất tài liệu",
+        "answer": "Tổng hợp câu trả lời",
+        "verify": "Kiểm chứng nguồn"
+      }
+    },
+    "faq": {
+      "eyebrow": "Dành cho nhà trị liệu",
+      "title": "Tra Cứu Nhanh Cùng Chuyên Gia Phục Hồi.",
+      "stats": {
+        "sourceValue": "BYT",
+        "sourceLabel": "Nguồn Bộ Y tế",
+        "languageValue": "VI",
+        "languageLabel": "Tiếng Việt"
+      },
+      "items": {
+        "source": {
+          "question": "$t(app.name) lấy thông tin từ đâu?",
+          "answer": "Từ các tài liệu hướng dẫn của Bộ Y tế về phục hồi chức năng. Mỗi câu trả lời đều kèm trích dẫn."
+        },
+        "replaceDoctor": {
+          "question": "Có thay thế được bác sĩ không?",
+          "answer": "Không. $t(app.aiDisclaimer) Hãy hỏi bác sĩ trước khi thay đổi việc tập luyện."
+        },
+        "needLogin": {
+          "question": "Tôi có cần đăng nhập không?",
+          "answer": "Không cần đăng nhập để hỏi các câu hỏi chung. Bệnh nhân và người nhà đăng nhập để xem lộ trình phục hồi của mình."
+        }
+      }
+    },
+    "login": {
+      "eyebrow": "Tài khoản",
+      "title": "Bạn Là Bệnh Nhân Hoặc Nhân Viên Của Trung Tâm?",
+      "description": "Đăng nhập để xem lộ trình phục hồi, lịch tái khám và hỏi đáp theo vai trò của bạn.",
+      "cta": "Đăng nhập →"
+    }
+  },
+  "footer": {
+    "description": "Trợ lý AI giúp việc phục hồi chức năng dễ hiểu và có cơ sở hơn.",
+    "linksTitle": "Liên kết",
+    "supportTitle": "Hỗ trợ",
+    "faq": "Câu hỏi thường gặp",
+    "copyright": "© {{year}} $t(app.name). Thông tin chỉ mang tính tham khảo, không thay thế chẩn đoán của bác sĩ."
+  },
+  "comingSoon": {
+    "title": "Tính năng đang được xây dựng",
+    "description": "Trang này chưa sẵn sàng. Vui lòng quay lại sau.",
+    "backHome": "Về trang chủ"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Đường dẫn không đúng hoặc trang đã bị xóa.",
+    "backHome": "Về trang chủ"
+  },
+  "auth": {
+    "pageTitle": "Đăng nhập - $t(app.name)",
+    "brand": {
+      "eyebrow": "Chào mừng trở lại",
+      "title": "Tiếp tục hành trình <accent>phục hồi</accent> của bạn.",
+      "description": "Đăng nhập để xem lại lịch sử câu hỏi và lộ trình tập luyện của bạn.",
+      "benefits": {
+        "citations": "Trích dẫn nguồn rõ ràng cho từng ý",
+        "history": "Lưu lịch sử câu hỏi và lộ trình tập luyện",
+        "audience": "Hỗ trợ cả bệnh nhân và nhà trị liệu"
+      }
+    },
+    "form": {
+      "title": "Đăng nhập",
+      "subtitle": "Chào mừng bạn quay lại $t(app.name).",
+      "identifierLabel": "Email hoặc số điện thoại",
+      "identifierPlaceholder": "ban@email.com",
+      "passwordLabel": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu",
+      "submit": "Đăng nhập",
+      "submitting": "Đang đăng nhập...",
+      "backHome": "Về trang chủ"
+    }
+  },
+  "errors": {
+    "IDENTIFIER_REQUIRED": "Chưa nhập email hoặc số điện thoại. Vui lòng nhập.",
+    "PASSWORD_REQUIRED": "Chưa nhập mật khẩu. Vui lòng nhập.",
+    "LOGIN_UNAVAILABLE": "Chưa đăng nhập được vì hệ thống đang được xây dựng. Vui lòng quay lại sau."
+  }
+}

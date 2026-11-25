@@ -14,7 +14,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     include: ["src/**/*.test.{ts,tsx}"],
-    // Once src/test/setup.ts exists (jest-dom, MSW): add setupFiles: ["./src/test/setup.ts"]
+    setupFiles: ["./src/test/setup.ts"],
     passWithNoTests: true,
   },
 });
