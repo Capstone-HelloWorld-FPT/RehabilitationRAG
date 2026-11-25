@@ -1,5 +1,8 @@
-# Local infrastructure: PostgreSQL (+ pgvector), Neo4j, Redis.
-# api / worker / frontend are added here once they have code (BACKEND-ARCHITECTURE section 11).
+# Whole project for local machines: `docker compose up --build`
+#   frontend http://localhost:8080 (nginx, forwards /api to the api)
+#   api      http://localhost:8000/docs
+#   postgres :5432, neo4j http://localhost:7474, redis :6379
+# The worker is added once it has a background job (BACKEND-ARCHITECTURE section 11).
 # The passwords below are for local machines only. Never use them in a real environment.
 
 services:
@@ -43,6 +46,47 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    # All backend settings come from backend/.env (copy backend/.env.example).
+    # DATABASE_URL there is used as is: a localhost URL goes to the postgres container,
+    # a Neon URL goes to Neon (the postgres container still runs).
+    env_file:
+      - path: ./backend/.env
+        required: true
+    environment:
+      DATABASE_LOCALHOST_ALIAS: postgres
+      # Neo4j and Redis always run in this compose file: use the container names.
+      NEO4J_URI: bolt://neo4j:7687
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   postgres-data:
