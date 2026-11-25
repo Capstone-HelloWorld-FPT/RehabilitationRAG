@@ -1,7 +1,21 @@
 # Secrets and real data (AGENTS.md section 7)
+# .env files of every folder (backend/.env, frontend/.env): DB URLs (Neon), JWT secret, API keys
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa*
+id_ed25519*
+credentials*.json
+service-account*.json
+secrets/
+# Local compose overrides may hold real connection strings
+docker-compose.override.yml
+compose.override.yml
 
 # Python
 __pycache__/

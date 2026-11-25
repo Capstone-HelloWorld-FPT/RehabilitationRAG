@@ -59,7 +59,7 @@ packages = ["rehabgraph"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["arq.*", "pgvector.*"]
+module = ["arq.*", "pgvector.*", "testcontainers.*"]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest
