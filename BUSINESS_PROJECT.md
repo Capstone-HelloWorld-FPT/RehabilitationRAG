@@ -150,7 +150,7 @@ These rules are **mandatory**. Code must enforce them, and tests must cover them
 - R-07. Relatives only see what the patient allowed.
 
 **No overwriting data**
-- R-08. Consent, patient status, assignments, pathways, relative permissions: **no update, no delete**. Each change is a new row / version.
+- R-08. Consent, patient status, assignments, pathways, relative permissions: **no update, no delete**. Each change is a new row / version. Only exception (team decision, 25/11/2026): the **status** of an assignment (active → ended) and of a pathway version (draft → approved / rejected / needs review, with who decided, when, and the reject reason) may be updated. Nothing else on those rows changes, and nothing is deleted.
 - R-09. Each patient has at most 1 open treatment episode.
 - R-10. Each pathway has at most 1 pending stage-change proposal.
 

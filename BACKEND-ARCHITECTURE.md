@@ -18,7 +18,7 @@ Versions below are the ones locked in `uv.lock` on 25/11/2026.
 | Language | Python 3.12 | Pinned in `backend/.python-version`. uv downloads it if needed. |
 | Web framework | FastAPI 0.165 | Decided |
 | Data types, validation | Pydantic 2.14, pydantic-settings 2.16 | |
-| Business database | PostgreSQL 16 | Decided. Docker image `pgvector/pgvector:pg16`. |
+| Business database | PostgreSQL 16 | Decided. Docker image `pgvector/pgvector:pg16` (default), or Neon (hosted PostgreSQL with pgvector) through `DATABASE_URL`. Real patient data on Neon needs a team decision first (Decree 13/2023, AGENTS section 8). |
 | ORM, migrations | SQLAlchemy 2.1 (async, asyncpg) + Alembic 1.20 | Decided |
 | Vector search | pgvector (inside PostgreSQL) | Decided |
 | Knowledge graph | Neo4j 5 (server), Python driver `neo4j` 6.4 | Decided. Can be swapped for PostgreSQL because it sits behind a port. |
@@ -28,7 +28,7 @@ Versions below are the ones locked in `uv.lock` on 25/11/2026.
 | Package manager | uv | Decided |
 | Tests | pytest 9, pytest-asyncio 1.5, testcontainers 4 | |
 | Lint, format, types | ruff 0.17, mypy 2.4 (strict), import-linter 2.17 | Config in `backend/pyproject.toml`. |
-| Local run | Docker Compose (`docker-compose.yml` at the repo root) | Today it only runs `postgres`, `neo4j`, `redis`. |
+| Local run | Docker Compose (`docker-compose.yml` at the repo root) | Runs `postgres`, `neo4j`, `redis`, `api` (`backend/docker/Dockerfile`) and `frontend` (nginx, `frontend/docker/Dockerfile`). |
 
 ---
 
@@ -411,14 +411,14 @@ Role names in code ↔ ERD: `RECEPTIONIST`=LE_TAN, `DOCTOR`=BAC_SI, `TECHNICIAN`
 - `AuditLogPort` writes to the `audit_log` table **in the same transaction** as the data.
 - Writing the log fails → rollback → no data is returned (R-12). This also applies to **read queries** on patient data.
 - Denied actions are logged too (`DENIED`).
-- `audit_log` table: the app's DB user only has `INSERT` and `SELECT`, no `UPDATE` / `DELETE`.
+- `audit_log` table: no `UPDATE` / `DELETE`. A database trigger (`forbid_overwrite`, first migration) rejects them for every DB user.
 
 ---
 
 ## 7. Database
 
 - **Business data** is in PostgreSQL. Table names in English, plural, snake_case (`pathway_versions`). The matching ERD table is written in a comment on the ORM model.
-- **No overwriting**: the tables `consents`, `status_records`, `assignments`, `pathway_versions`, `caregiver_permission_versions`, `audit_log` only get new rows.
+- **No overwriting**: the tables `consents`, `status_records`, `assignments`, `pathway_versions`, `caregiver_permission_versions`, `audit_log` only get new rows. Exception (R-08): `assignments.status` and the status columns of `pathway_versions` (`status`, `decided_by`, `decided_at`, `reject_reason`) may be updated. This is enforced in the database by the trigger `forbid_overwrite` (first migration): `DELETE` is rejected, and `UPDATE` is rejected unless only the allowed columns change. The list lives in `no_overwrite(...)` in each `orm.py` and in the migration.
 - Primary keys: UUID v7.
 - Times are stored in UTC (`timestamptz`). The frontend shows Vietnam time.
 - Key business constraints are also enforced in the DB (partial unique indexes):
@@ -466,7 +466,7 @@ Read from environment variables through `config.py` (pydantic-settings). Sample 
 
 | Variable | Example |
 |---|---|
-| `DATABASE_URL` | `postgresql+asyncpg://...` |
+| `DATABASE_URL` | `postgresql+asyncpg://...` (Docker) or the Neon connection string as is. `shared/adapters/postgres/engine.py` converts `sslmode` / `channel_binding` for asyncpg and turns the statement cache off for `-pooler` hosts. Run migrations on the direct Neon host. The same `backend/.env` is used in Docker: compose sets `DATABASE_LOCALHOST_ALIAS=postgres`, so a localhost URL reaches the postgres container. |
 | `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD` | |
 | `REDIS_URL` | |
 | `JWT_SECRET`, `JWT_ACCESS_TTL_MIN` | |
@@ -501,4 +501,4 @@ CI order: `ruff` → `mypy` → `lint-imports` → unit → integration → api 
 ## 11. Deployment
 
 - One installation for the center includes: `api`, `worker`, `postgres`, `neo4j`, `redis`, `frontend` (nginx).
-- Today `docker-compose.yml` only has `postgres`, `neo4j`, `redis`. `api`, `worker`, `frontend` are added when their Dockerfiles exist.
+- `docker-compose.yml` runs `postgres`, `neo4j`, `redis`, `api` and `frontend`. The `api` container runs `alembic upgrade head` before starting. nginx in `frontend` forwards `/api/` to `api`, so the browser uses one origin. `worker` is added once it has a background job (arq needs at least one).

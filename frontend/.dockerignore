@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+playwright-report
+test-results
+# frontend/.env is kept: Vite reads its VITE_* values at build time (public values only).
+.env.*.local

@@ -35,7 +35,8 @@ Commands marked *(after code)* only work once the matching code exists (e.g. `ma
 
 ```bash
 # Run everything locally (from the repo root)
-docker compose up -d                       # postgres (+pgvector), neo4j, redis
+docker compose up -d --build               # whole project: frontend :8080, api :8000, postgres, neo4j, redis
+docker compose up -d postgres neo4j redis  # only the infrastructure (when running api / frontend by hand)
 cp backend/.env.example backend/.env       # then fill in secrets
 cp frontend/.env.example frontend/.env
 
@@ -86,7 +87,7 @@ Where the config lives: backend → `backend/pyproject.toml` (ruff, mypy, pytest
 8. Every use case that reads / writes patient data must check **3 layers**: role → scope (assignment / relative permission / own data) → knowledge level. See BACKEND section 6.
 9. The permission matrix is only changed in `shared/auth/permissions.py` (backend). The frontend has a copy to hide / show UI: **change both** and update the permission tests.
 10. **Audit log**: write it in the same transaction. If writing fails, return no data (R-12). Log denied actions too.
-11. **No update, no delete** on these tables: consent, patient status, assignments, pathway versions, relative permission versions, audit log. A change = a new row (R-08).
+11. **No update, no delete** on these tables: consent, patient status, assignments, pathway versions, relative permission versions, audit log. A change = a new row (R-08). Only exception: the status columns of `assignments` (`status`) and `pathway_versions` (`status`, `decided_by`, `decided_at`, `reject_reason`) may be updated.
 12. The LLM is called through **OpenRouter**. **Never send patient identity data** (name, phone, ID card number, date of birth) in a prompt. Only send the question and the clinical data that is needed.
 13. **Never write patient information to logs** (name, phone, ID card number, diagnosis, question text). Logs only contain IDs.
 14. Never put real patient data in tests, seeds, fixtures, or screenshots. Use fake data.
