@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import logoUrl from "@/shared/assets/logo.svg";
+import { cn } from "@/shared/lib/utils";
+import { buttonVariants } from "@/shared/ui/button-variants";
 
 import { AuthBrandPanel } from "../components/AuthBrandPanel";
 import { LoginForm } from "../components/LoginForm";
@@ -48,16 +50,15 @@ export function LoginPage() {
             <p className="text-body-sm text-muted-foreground">{t("auth.form.subtitle")}</p>
           </div>
 
-          <LoginForm onSubmit={login} />
+          <div className="flex flex-col gap-3">
+            <LoginForm onSubmit={login} />
+            <Link to="/" className={cn(buttonVariants(), "h-12 w-full")}>
+              {t("auth.form.backHome")}
+            </Link>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Link
-            to="/"
-            className="text-body-sm focus-visible:ring-ring rounded-sm font-bold text-teal-900 underline focus-visible:ring-2 focus-visible:outline-none"
-          >
-            {t("auth.form.backHome")}
-          </Link>
+        <div className="text-center">
           <p className="text-caption text-muted-foreground">
             {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
