@@ -6,6 +6,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.13.9 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
+    UV_HTTP_TIMEOUT=120 \
     UV_PROJECT_ENVIRONMENT=/app/.venv \
     PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
@@ -27,5 +28,5 @@ USER app
 
 EXPOSE 8000
 
-# Run migrations, then serve the API.
-CMD ["sh", "-c", "alembic upgrade head && uvicorn rehabgraph.main:app --host 0.0.0.0 --port 8000"]
+# Run migrations, then serve the API. Railway sets PORT; locally it is 8000.
+CMD ["sh", "-c", "alembic upgrade head && exec uvicorn rehabgraph.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

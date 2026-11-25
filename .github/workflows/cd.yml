@@ -1,0 +1,123 @@
+# CD: on every push to main, run CI, then deploy the backend to Railway and the frontend to Vercel.
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   RAILWAY_TOKEN      Railway project token (Project → Settings → Tokens), scoped to "production"
+#   VERCEL_TOKEN       Vercel access token (Account → Tokens)
+#   VERCEL_ORG_ID      "orgId" in .vercel/project.json after `vercel link`
+#   VERCEL_PROJECT_ID  "projectId" in .vercel/project.json after `vercel link`
+# Repository variable:
+#   RAILWAY_SERVICE    Railway service name of the API (default: RehabilitationRAG)
+#
+# A deploy job is skipped with a warning while its secrets are not set yet.
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two production deploys at the same time, and never cancel one halfway.
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  deploy-backend:
+    name: Deploy backend (Railway)
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE || 'RehabilitationRAG' }}
+    steps:
+      - name: Check secrets
+        id: check
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::warning title=Backend not deployed::Set the RAILWAY_TOKEN secret to deploy to Railway."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.check.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v7
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: "24"
+
+      - name: Install Railway CLI
+        if: steps.check.outputs.ready == 'true'
+        run: npm install --global @railway/cli@5.75.0
+
+      # Uploads backend/ only. Railway reads backend/railway.json (Dockerfile build, health check).
+      # The container runs `alembic upgrade head` before starting the API.
+      - name: Deploy
+        if: steps.check.outputs.ready == 'true'
+        run: >
+          railway up backend --path-as-root --ci
+          --service "$RAILWAY_SERVICE"
+          --message "deploy ${{ github.sha }}"
+
+  deploy-frontend:
+    name: Deploy frontend (Vercel)
+    needs: [ci, deploy-backend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Check secrets
+        id: check
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::warning title=Frontend not deployed::Set VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID to deploy to Vercel."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.check.outputs.ready == 'true'
+
+      - uses: pnpm/action-setup@v6
+        if: steps.check.outputs.ready == 'true'
+        with:
+          version: "12.6.0"
+
+      - uses: actions/setup-node@v7
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install Vercel CLI
+        if: steps.check.outputs.ready == 'true'
+        run: npm install --global vercel@66.6.0
+
+      # Runs from the repo root: the Vercel project's "Root Directory" must be `frontend`.
+      # `vercel pull` brings the production env vars (VITE_API_BASE_URL = the Railway URL).
+      - name: Pull Vercel settings
+        if: steps.check.outputs.ready == 'true'
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build
+        if: steps.check.outputs.ready == 'true'
+        run: vercel build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy
+        if: steps.check.outputs.ready == 'true'
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
