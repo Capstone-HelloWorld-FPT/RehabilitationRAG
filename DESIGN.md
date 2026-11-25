@@ -98,7 +98,7 @@ shadcn names tokens by **role** (primary, muted...). The table below assigns Fig
 | `--card-foreground` | `#0F3B38` | |
 | `--popover` / `--popover-foreground` | `#FFFFFF` / `#0F3B38` | |
 | `--border` | `#F1DDD4` | Card border in Figma. |
-| `--input` | `#F1DDD4` | 💡 Figma only has inputs on dark backgrounds (no border). On white they need a border, so we use the card border color for now. |
+| `--input` | `#DDE5E3` | ✅ From Figma (login screen): 1px border of inputs, Google button, and tab divider. The landing page inputs sit on dark backgrounds and have no border. |
 | `--ring` | `#0F3B38` | 💡 Focus ring. Not in Figma. |
 | `--destructive` | ⛔ MISSING | |
 | `--sidebar` | `#0F3B38` | 💡 The workspace menu bar uses the Figma header color. |

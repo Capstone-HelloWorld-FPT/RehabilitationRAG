@@ -38,6 +38,9 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 
+# Vercel CLI link and build output (`vercel pull` / `vercel build`)
+.vercel/
+
 # Editor / OS
 .vscode/
 .idea/

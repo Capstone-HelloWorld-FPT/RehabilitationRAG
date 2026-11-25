@@ -494,11 +494,16 @@ Never commit secrets. Never write patient information to logs.
 | RAG eval | Right source, right citation, **0 leaks of Deep content** to Basic-only users, pathway matches the documents | `tests/rag_eval/`, runs in CI |
 | Architecture | Dependency rules between layers | import-linter |
 
-CI order: `ruff` → `mypy` → `lint-imports` → unit → integration → api → rag_eval.
+CI order: `ruff` → `mypy` → `lint-imports` → unit → integration → api → rag_eval. It runs in GitHub Actions (`.github/workflows/ci.yml`) on every pull request, together with the frontend checks (lint, typecheck, Prettier, Vitest, build) and a build of the api Docker image. `rag_eval` is added once the test question set exists.
 
 ---
 
 ## 11. Deployment
 
 - One installation for the center includes: `api`, `worker`, `postgres`, `neo4j`, `redis`, `frontend` (nginx).
+- Hosting (team decision, 25/11/2026): **frontend on Vercel**, **backend (api) on Railway**, database on Neon (or Railway PostgreSQL) through `DATABASE_URL`. Neo4j and Redis for production are not chosen yet.
+- **CD** (`.github/workflows/cd.yml`): every push to `main` runs CI, then deploys the backend (`railway up backend`, Dockerfile build, health check `/api/v1/health` from `backend/railway.json`), then the frontend (`vercel build` + `vercel deploy --prebuilt --prod`, SPA rewrites in `frontend/vercel.json`). A deploy job is skipped with a warning until its secrets exist.
+- One-time setup:
+  - **Railway**: create a project and a service `RehabilitationRAG` (empty service, deploys come from CI). Service variables: everything in `backend/.env.example` (`DATABASE_URL` = Neon direct URL, `JWT_SECRET`, `CORS_ORIGINS` = `["https://<project>.vercel.app"]`, ...). Railway sets `PORT`. Create a project token for the `production` environment → GitHub secret `RAILWAY_TOKEN`. If the service is renamed, set the GitHub variable `RAILWAY_SERVICE` to the new name.
+  - **Vercel**: create the project (dashboard or `vercel link`) with Root Directory `frontend`. Git auto-deploys are off in `frontend/vercel.json` (CI deploys). Environment variable `VITE_API_BASE_URL` = the Railway public URL. Run `vercel link` once locally to get `orgId` / `projectId` from `.vercel/project.json` → GitHub secrets `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, plus `VERCEL_TOKEN`.
 - `docker-compose.yml` runs `postgres`, `neo4j`, `redis`, `api` and `frontend`. The `api` container runs `alembic upgrade head` before starting. nginx in `frontend` forwards `/api/` to `api`, so the browser uses one origin. `worker` is added once it has a background job (arq needs at least one).
